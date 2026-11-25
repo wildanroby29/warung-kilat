@@ -21,6 +21,14 @@
     };
   }
 
+  // Station keys come from the station definitions (Q=grill, W=wok, E=board, R=steamer),
+  // so look the index up instead of assuming an order.
+  function stationIndex(key) {
+    var sts = window.WK.STATIONS || [];
+    for (var i = 0; i < sts.length; i++) if (sts[i].key === key) return i;
+    return -1;
+  }
+
   // Bind mouse + keyboard to a handler object {onClick(hit), onKey(action)}.
   function bind(handler) {
     canvas.addEventListener('click', function (e) {
@@ -36,10 +44,11 @@
       if (k === ' ' || k === 'Enter') { handler.onKey('serve'); e.preventDefault(); return; }
       if (k >= '1' && k <= '8') { handler.onKey('bin' + (parseInt(k, 10) - 1)); return; }
       var up = k.toUpperCase();
-      if (up === 'Q') { handler.onKey('station0'); return; }
-      if (up === 'W') { handler.onKey('station1'); return; }
-      if (up === 'E') { handler.onKey('station2'); return; }
-      if (up === 'R') { handler.onKey('station3'); return; }
+      if (up === 'Q' || up === 'W' || up === 'E' || up === 'R') {
+        var idx = stationIndex(up);
+        if (idx >= 0) handler.onKey('station' + idx);
+        return;
+      }
       if (up === 'X') { handler.onKey('trash'); return; }
       if (up === 'P' || k === 'Escape') { handler.onKey('pause'); return; }
       if (up === 'M') { handler.onKey('mute'); return; }
