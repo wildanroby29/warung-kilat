@@ -258,6 +258,12 @@
       ctx.fillStyle = i % 2 ? CFG.palette.awningRed : CFG.palette.awningCream;
       ctx.fillRect(i * 80, 132, 80, 16);
     }
+    // hanging paper lanterns in the dark gaps beside the plate (night-market look)
+    if (state.scene === 'play' || state.scene === 'pause' || state.scene === 'help' || state.scene === 'summary') {
+      var sway = Math.sin(state.t * 1.2) * 3;
+      window.WK.art.drawLantern(ctx, 300 + sway, 500, 22, '#e5484d', true);
+      window.WK.art.drawLantern(ctx, 980 - sway, 500, 22, '#f59e0b', true);
+    }
     if (state.scene === 'title') {
       window.WK.scenes.drawTitle(ctx, state, state.t);
     } else if (state.scene === 'help') {
