@@ -250,19 +250,14 @@
     var off = window.WK.particles.shakeOffset(state.particles);
     ctx.translate(view.ox + off.x, view.oy + off.y);
     ctx.scale(view.scale, view.scale);
-    // night sky backdrop for the play screen
+    // night sky backdrop for the play screen (the awning is drawn by ui.drawPlay)
     ctx.fillStyle = CFG.palette.night;
     ctx.fillRect(0, 0, CFG.W, CFG.H);
-    // stall awning stripes
-    for (var i = 0; i < 16; i++) {
-      ctx.fillStyle = i % 2 ? CFG.palette.awningRed : CFG.palette.awningCream;
-      ctx.fillRect(i * 80, 132, 80, 16);
-    }
     // hanging paper lanterns in the dark gaps beside the plate (night-market look)
     if (state.scene === 'play' || state.scene === 'pause' || state.scene === 'help' || state.scene === 'summary') {
       var sway = Math.sin(state.t * 1.2) * 3;
-      window.WK.art.drawLantern(ctx, 300 + sway, 500, 22, '#e5484d', true);
-      window.WK.art.drawLantern(ctx, 980 - sway, 500, 22, '#f59e0b', true);
+      window.WK.art.drawLantern(ctx, 300 + sway, 520, 22, '#e5484d', true);
+      window.WK.art.drawLantern(ctx, 980 - sway, 520, 22, '#f59e0b', true);
     }
     if (state.scene === 'title') {
       window.WK.scenes.drawTitle(ctx, state, state.t);
@@ -360,19 +355,35 @@
   }
 
   // ---- Demo mode: build a shot state through the real code path ----
+  // Each shot is a different real-play moment: different timer, different
+  // patience levels (green / yellow / red), different ticket sets and nights.
   function applyDemo(shot) {
     state.demo = shot;
     state.scene = 'play';
-    state.night = shot === 'night3' ? 3 : 1;
-    state.timeLeft = shot === 'rush' ? 42 : 88;
-    state.score = shot === 'rush' ? 320 : (shot === 'ready' ? 450 : 180);
-    state.combo = shot === 'rush' ? 3 : 1;
+    // varied nights and timers per shot
+    var nightByShot = { rush: 1, assembly: 2, ready: 2, night3: 3 };
+    var timeByShot = { rush: 42, assembly: 63, ready: 25, night3: 74 };
+    var scoreByShot = { rush: 320, assembly: 210, ready: 450, night3: 580 };
+    state.night = nightByShot[shot] || 1;
+    state.timeLeft = timeByShot[shot] || 60;
+    state.score = scoreByShot[shot] || 180;
+    state.combo = shot === 'rush' ? 3 : (shot === 'night3' ? 4 : 1);
     state.comboMult = 1 + state.combo * CFG.comboStep;
     state.rush = (shot === 'rush' || shot === 'night3');
-    // tickets via the real generator
+    // keep rush active for the whole shot (rushT drains in update())
+    if (state.rush) state.rushT = 60;
+    // never auto-trigger a rush during a screenshot (rushAt is 0 by default,
+    // which would fire rush immediately on night >= 2)
+    state.rushAt = 999;
+    // tickets via the real generator, then set varied patience levels
     state.tickets.length = 0;
     var want = shot === 'rush' ? 5 : 4;
     for (var i = 0; i < want; i++) spawnTicket();
+    // patience fractions: green, yellow, red mix so the bars differ
+    var fracs = [0.82, 0.55, 0.34, 0.18, 0.66];
+    for (var p = 0; p < state.tickets.length; p++) {
+      state.tickets[p].patience = state.tickets[p].patienceMax * fracs[p % fracs.length];
+    }
     state.targetIndex = 0;
     var dish = targetDish();
     if (shot === 'assembly' && dish) {

@@ -1,5 +1,6 @@
 // scenes.js — title, help, pause, summary and end screens.
 // Single responsibility: drawing the non-play overlays and their buttons.
+// All labels are English; dish names stay Indonesian for flavour.
 
 (function () {
   'use strict';
@@ -41,19 +42,19 @@
     c.fillText('WARUNG KILAT', CFG.W / 2, 260);
     c.fillStyle = '#fff8e7';
     c.font = 'bold 30px system-ui, sans-serif';
-    c.fillText('Warung makan pasar malam — masak cepat, saji tepat!', CFG.W / 2, 312);
+    c.fillText('A night-market food stall — cook fast, serve right!', CFG.W / 2, 312);
     c.font = '20px system-ui, sans-serif';
     c.fillStyle = '#fbbf24';
-    c.fillText('5 malam • 5 hidangan • pelanggan tidak sabar menunggu', CFG.W / 2, 348);
+    c.fillText('5 nights • 5 dishes • impatient customers', CFG.W / 2, 348);
     // start prompt (pulsing)
     var a = 0.6 + 0.4 * Math.sin(t * 4);
     c.fillStyle = 'rgba(255,248,231,' + a.toFixed(3) + ')';
     c.font = 'bold 26px system-ui, sans-serif';
-    c.fillText('Klik atau tekan Enter untuk buka warung', CFG.W / 2, 430);
+    c.fillText('Click or press Enter to open the stall', CFG.W / 2, 430);
     c.fillStyle = '#fff8e7';
     c.font = '18px system-ui, sans-serif';
-    c.fillText('1-8 bahan  •  Q/W/E/R stasiun  •  Space antar  •  X buang  •  P jeda  •  H bantuan', CFG.W / 2, 480);
-    c.fillText('Skor terbaik: ' + state.best, CFG.W / 2, 516);
+    c.fillText('1-8 ingredients  •  Q/W/E/R stations  •  Space serve  •  X trash  •  P pause  •  H help', CFG.W / 2, 480);
+    c.fillText('Best score: ' + state.best, CFG.W / 2, 516);
     c.restore();
   }
 
@@ -63,26 +64,26 @@
     panel(c, 240, 90, 800, 540);
     c.fillStyle = '#241a12'; c.textAlign = 'left';
     c.font = 'bold 30px system-ui, sans-serif';
-    c.fillText('Cara Bermain', 280, 150);
+    c.fillText('How to Play', 280, 150);
     c.font = '19px system-ui, sans-serif';
     var lines = [
-      '1. Pesanan muncul di papan atas. Klik tiket untuk memilih pesanan yang dikerjakan.',
-      '2. Klik bak bahan (1-8) atau tekan angka untuk mengambil bahan.',
-      '3. Bahan mentah harus dimasak: Sate → Panggangan (Q), Telur → Wajan (W),',
-      '    Tempeh → Talenan (E), Nasi → Kukusan (R). Tunggu sampai SIAP, lalu ambil.',
-      '4. Klik piring untuk menyusun lapisan sesuai urutan pesanan.',
-      '    Garis putus-putus menunjukkan lapisan berikutnya.',
-      '5. Kalau piring sudah sama persis dengan pesanan, piring menyala READY.',
-      '    Tekan Space / Enter atau klik lonceng untuk mengantar.',
-      '6. Jangan biarkan sate gosong di panggangan! Buang dengan X kalau gosong.',
-      '7. Sabar pelanggan menipis — antar cepat untuk tip besar dan kombo.',
+      '1. Orders appear on the board above. Click a ticket to work on that order.',
+      '2. Click an ingredient bin (1-8) or press its number to pick it up.',
+      '3. Raw ingredients must be cooked: Skewers → Grill (Q), Egg → Wok (W),',
+      '    Tempeh → Chopping board (E), Rice → Steamer (R). Wait until READY, then collect.',
+      '4. Click the plate to stack layers in the order shown on the ticket.',
+      '    The dashed outline shows the next layer.',
+      '5. When the plate matches the order exactly, it glows READY.',
+      '    Press Space / Enter or click the bell to serve it.',
+      '6. Do not leave skewers on the grill — they burn! Discard with X if burnt.',
+      '7. Customer patience runs out — serve fast for big tips and combos.',
       '',
-      'Kontrol: 1-8 bahan • Q/W/E/R stasiun • Space antar • X buang • P jeda • M bisu'
+      'Controls: 1-8 ingredients • Q/W/E/R stations • Space serve • X trash • P pause • M mute'
     ];
     for (var i = 0; i < lines.length; i++) c.fillText(lines[i], 280, 190 + i * 30);
     c.fillStyle = '#6b4a2a';
     c.font = 'bold 20px system-ui, sans-serif';
-    c.fillText('Tekan H / Esc / klik untuk kembali', 280, 190 + lines.length * 30 + 10);
+    c.fillText('Press H / Esc / click to go back', 280, 190 + lines.length * 30 + 10);
     c.restore();
   }
 
@@ -92,10 +93,10 @@
     c.textAlign = 'center';
     c.fillStyle = '#ffc53d';
     c.font = 'bold 64px system-ui, sans-serif';
-    c.fillText('JEDA', CFG.W / 2, 320);
+    c.fillText('PAUSED', CFG.W / 2, 320);
     c.fillStyle = '#fff8e7';
     c.font = '24px system-ui, sans-serif';
-    c.fillText('Tekan P / Esc / klik untuk lanjut', CFG.W / 2, 372);
+    c.fillText('Press P / Esc / click to resume', CFG.W / 2, 372);
     c.restore();
   }
 
@@ -106,10 +107,10 @@
     c.textAlign = 'center';
     c.fillStyle = '#241a12';
     c.font = 'bold 34px system-ui, sans-serif';
-    c.fillText('Malam ' + state.night + ' selesai!', CFG.W / 2, 180);
+    c.fillText('Night ' + state.night + ' complete!', CFG.W / 2, 180);
     c.font = '22px system-ui, sans-serif';
-    c.fillText('Hidangan diantar: ' + state.served + '   •   Pesanan hilang: ' + state.lost, CFG.W / 2, 230);
-    c.fillText('Skor malam ini: ' + state.nightScore + '   •   Skor total: ' + state.score, CFG.W / 2, 266);
+    c.fillText('Dishes served: ' + state.served + '   •   Orders lost: ' + state.lost, CFG.W / 2, 230);
+    c.fillText('Night score: ' + state.nightScore + '   •   Total score: ' + state.score, CFG.W / 2, 266);
     c.font = 'bold 44px system-ui, sans-serif';
     c.fillStyle = '#ffc53d';
     var stars = '';
@@ -117,11 +118,11 @@
     c.fillText(stars, CFG.W / 2, 330);
     c.fillStyle = '#241a12';
     c.font = '22px system-ui, sans-serif';
-    c.fillText(state.night < 5 ? 'Malam berikutnya makin ramai!' : 'Itu malam terakhir — lihat hasil akhirmu!', CFG.W / 2, 380);
+    c.fillText(state.night < 5 ? 'The next night gets busier!' : 'That was the last night — see your final result!', CFG.W / 2, 380);
     var a = 0.6 + 0.4 * Math.sin(performance.now() / 300);
     c.fillStyle = 'rgba(36,26,18,' + a.toFixed(3) + ')';
     c.font = 'bold 24px system-ui, sans-serif';
-    c.fillText(state.night < 5 ? 'Klik / Enter — Malam ' + (state.night + 1) : 'Klik / Enter — Hasil Akhir', CFG.W / 2, 450);
+    c.fillText(state.night < 5 ? 'Click / Enter — Night ' + (state.night + 1) : 'Click / Enter — Final Result', CFG.W / 2, 450);
     c.restore();
   }
 
@@ -134,13 +135,13 @@
     c.textAlign = 'center';
     c.fillStyle = '#ffc53d';
     c.font = 'bold 64px system-ui, sans-serif';
-    c.fillText(state.score >= 1500 ? 'WARUNG LEGENDA!' : 'WARUNG TUTUP', CFG.W / 2, 240);
+    c.fillText(state.score >= 1500 ? 'LEGENDARY STALL!' : 'STALL CLOSED', CFG.W / 2, 240);
     c.fillStyle = '#fff8e7';
     c.font = '26px system-ui, sans-serif';
-    c.fillText('5 malam selesai. Skor akhir: ' + state.score, CFG.W / 2, 300);
-    c.fillText('Skor terbaik: ' + Math.max(state.best, state.score), CFG.W / 2, 340);
+    c.fillText('5 nights done. Final score: ' + state.score, CFG.W / 2, 300);
+    c.fillText('Best score: ' + Math.max(state.best, state.score), CFG.W / 2, 340);
     c.font = '20px system-ui, sans-serif';
-    c.fillText('Klik / Enter untuk main lagi', CFG.W / 2, 420);
+    c.fillText('Click / Enter to play again', CFG.W / 2, 420);
     c.restore();
   }
 

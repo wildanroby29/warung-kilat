@@ -1,5 +1,6 @@
 // config.js — constants, palette, dishes, nights, and tuning for Warung Kilat.
 // Single responsibility: every number and name the game uses lives here.
+// UI labels are English; dish names stay Indonesian for flavour.
 
 (function () {
   'use strict';
@@ -42,6 +43,7 @@
       awningCream: '#fff3d6',
       counter: '#7a4a21',    // wooden counter
       counterTop: '#a06a35',
+      counterDark: '#5d3a1a',
       plate: '#f5efe0',
       gold: '#ffc53d',
       cream: '#fff8e7',
@@ -54,28 +56,30 @@
     }
   };
 
-  // Ingredients: id, name, key label, colour, station needed (null = ready to plate)
+  // Ingredients: id, English name, short label, key, colour, station needed
+  // (null = ready to plate). Dish names stay Indonesian for flavour.
   var INGREDIENTS = [
-    { id: 'rice',     name: 'Nasi',      key: '1', color: '#f5efe0', station: 'steamer' },
-    { id: 'skewer',   name: 'Sate Ayam', key: '2', color: '#d97706', station: 'grill' },
-    { id: 'egg',      name: 'Telur',     key: '3', color: '#fde68a', station: 'wok' },
-    { id: 'tempeh',   name: 'Tempeh',    key: '4', color: '#b45309', station: 'board' },
-    { id: 'cucumber', name: 'Timun',     key: '5', color: '#4ade80', station: null },
-    { id: 'tomato',   name: 'Tomat',     key: '6', color: '#ef4444', station: null },
-    { id: 'sambal',   name: 'Sambal',    key: '7', color: '#dc2626', station: null },
-    { id: 'shallot',  name: 'Bawang',    key: '8', color: '#fbbf24', station: null }
+    { id: 'rice',     name: 'Rice',           short: 'Rice',     key: '1', color: '#f5efe0', station: 'steamer' },
+    { id: 'skewer',   name: 'Chicken skewers', short: 'Skewers', key: '2', color: '#d97706', station: 'grill' },
+    { id: 'egg',      name: 'Egg',            short: 'Egg',      key: '3', color: '#fde68a', station: 'wok' },
+    { id: 'tempeh',   name: 'Tempeh',         short: 'Tempeh',   key: '4', color: '#b45309', station: 'board' },
+    { id: 'cucumber', name: 'Cucumber',       short: 'Cucumber', key: '5', color: '#4ade80', station: null },
+    { id: 'tomato',   name: 'Tomato',         short: 'Tomato',   key: '6', color: '#ef4444', station: null },
+    { id: 'sambal',   name: 'Sambal',         short: 'Sambal',   key: '7', color: '#dc2626', station: null },
+    { id: 'shallot',  name: 'Fried shallots', short: 'Shallots', key: '8', color: '#fbbf24', station: null }
   ];
 
-  // Stations: id, name, key, cook time, colour
+  // Stations: id, English name, key, cook time, colour
   var STATIONS = [
-    { id: 'steamer', name: 'Kukusan', key: 'R', seconds: 2, color: '#7dd3fc' },
-    { id: 'grill',   name: 'Panggangan', key: 'Q', seconds: 4, color: '#f97316' },
-    { id: 'wok',     name: 'Wajan', key: 'W', seconds: 3, color: '#facc15' },
-    { id: 'board',   name: 'Talenan', key: 'E', seconds: 2, color: '#a3e635' }
+    { id: 'steamer', name: 'Steamer',        key: 'R', seconds: 2, color: '#7dd3fc' },
+    { id: 'grill',   name: 'Grill',          key: 'Q', seconds: 4, color: '#f97316' },
+    { id: 'wok',     name: 'Wok',            key: 'W', seconds: 3, color: '#facc15' },
+    { id: 'board',   name: 'Chopping board', key: 'E', seconds: 2, color: '#a3e635' }
   ];
 
   // Dishes: each is an ordered list of ingredient ids (after prep).
   // A cooked ingredient is named '<id>_cooked' (e.g. 'skewer_cooked').
+  // Dish names stay Indonesian for flavour.
   var DISHES = [
     { id: 'nasi-goreng', name: 'Nasi Goreng', price: 100,
       layers: ['rice_cooked', 'egg_cooked', 'cucumber', 'sambal', 'shallot'] },
@@ -98,19 +102,18 @@
     [0, 1, 2, 3, 4]
   ];
 
-  // Display name for a (possibly cooked) ingredient id
+  // Display name for a (possibly cooked) ingredient id, in English.
   function ingredientName(id) {
     var base = id.replace('_cooked', '');
     for (var i = 0; i < INGREDIENTS.length; i++) {
       if (INGREDIENTS[i].id === base) {
-        var n = INGREDIENTS[i].name;
         if (id.indexOf('_cooked') !== -1) {
-          if (base === 'rice') return 'Nasi Kukus';
-          if (base === 'skewer') return 'Sate Bakar';
-          if (base === 'egg') return 'Telur Dadar';
-          if (base === 'tempeh') return 'Tempeh Goreng';
+          if (base === 'rice') return 'Steamed rice';
+          if (base === 'skewer') return 'Grilled skewers';
+          if (base === 'egg') return 'Fried egg';
+          if (base === 'tempeh') return 'Fried tempeh';
         }
-        return n;
+        return INGREDIENTS[i].name;
       }
     }
     return id;

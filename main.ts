@@ -4,7 +4,7 @@
 // no network, no clock, no randomness: the same input always gives the
 // same output, so the grader can run it twice and get identical bytes.
 
-import { cpSync, existsSync, mkdirSync, writeFileSync } from 'node:fs';
+import { cpSync, existsSync, mkdirSync, writeFileSync, chmodSync, readdirSync, statSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { buildDossier } from './vendor/makefun-game.ts';
@@ -18,6 +18,18 @@ const outDir = process.env.MAKEFUN_OUTPUT_DIR ?? '/output';
 const here = dirname(fileURLToPath(import.meta.url));
 const gameDir = join(here, 'game');
 const shotsDir = join(here, 'screenshots');
+
+// The grader requires everything it writes to be world-readable: files
+// 0644, folders 0755. cpSync copies source modes and writeFileSync follows
+// the umask, so set the modes explicitly after writing.
+function setPerms(dir) {
+  chmodSync(dir, 0o755);
+  for (const name of readdirSync(dir)) {
+    const p = join(dir, name);
+    if (statSync(p).isDirectory()) setPerms(p);
+    else chmodSync(p, 0o644);
+  }
+}
 
 mkdirSync(outDir, { recursive: true });
 
@@ -34,3 +46,8 @@ const dossier = buildDossier(outDir, {
   game_path_max_bytes: 1000,
 });
 writeFileSync(join(outDir, 'dossier.json'), dossier);
+
+// World-readable output: 0644 files, 0755 folders.
+setPerms(join(outDir, 'game'));
+setPerms(join(outDir, 'screenshots'));
+chmodSync(join(outDir, 'dossier.json'), 0o644);
